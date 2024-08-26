@@ -20,6 +20,40 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+
+        MethodSignature methodSignature = new MethodSignature("");
+
+        // Extract access modifier if present
+        String[] parts = signatureString.split("\\s+", 2);
+        String firstPart = parts[0];
+        String remainder = parts[1];
+
+        if (firstPart.equals("public") || firstPart.equals("private") || firstPart.equals("protected")) {
+            methodSignature.setAccessModifier(firstPart);
+            parts = remainder.split("\\s+", 2);
+        } else {
+            parts = signatureString.split("\\s+", 2);
+        }
+
+        // Extract return type
+        methodSignature.setReturnType(parts[0]);
+        remainder = parts[1];
+
+        // Extract method name and arguments
+        String methodName = remainder.substring(0, remainder.indexOf('('));
+        methodSignature.setMethodName(methodName);
+
+        String argumentsString = remainder.substring(remainder.indexOf('(') + 1, remainder.lastIndexOf(')'));
+
+        if (!argumentsString.isEmpty()) {
+            String[] argumentsArray = argumentsString.split(", ");
+            for (String argument : argumentsArray) {
+                String[] argumentParts = argument.split(" ");
+                methodSignature.getArguments().add(new MethodSignature.Argument(argumentParts[0], argumentParts[1]));
+            }
+        }
+
+        return methodSignature;
     }
 }
+
